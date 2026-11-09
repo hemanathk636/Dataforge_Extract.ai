@@ -254,6 +254,12 @@
 
             <!-- Action Buttons with Rich Details -->
             <div class="flex items-center space-x-3">
+                <!-- GET APP BUTTON (PROMINENT ON ALL SCREENS) -->
+                <button onclick="openGetAppModal()" class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 text-xs font-bold transition shadow-sm hover:scale-[1.02] active:scale-[0.98]" title="Get Extract App on Mobile & Desktop">
+                    <i data-lucide="smartphone" class="w-4 h-4 text-purple-600"></i>
+                    <span>Get App</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                </button>
                 <button onclick="openConsultationModal()" class="hidden sm:inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition" title="Book a 1-on-1 scraping architecture consultation">
                     <i data-lucide="phone-call" class="w-3.5 h-3.5 text-slate-500"></i>
                     <span>Book Consultation</span>
@@ -309,6 +315,14 @@
                                 <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
                                 <span>No credit card required &bull; Free instant access &bull; Private local execution</span>
                             </div>
+                        </div>
+
+                        <!-- GET APP HERO CHIP -->
+                        <div class="inline-flex items-center gap-2 pt-1">
+                            <button type="button" onclick="openGetAppModal()" class="px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 text-xs font-bold transition shadow-sm flex items-center space-x-1.5 hover:scale-[1.02] active:scale-[0.98]" title="Scan QR Code or open on your mobile phone">
+                                <i data-lucide="smartphone" class="w-3.5 h-3.5 text-purple-600"></i>
+                                <span>📱 Open / Install App on Mobile (Scan QR)</span>
+                            </button>
                         </div>
 
                         <!-- 1-CLICK LIVE PRESETS (INSTANT HUB LAUNCH) -->
