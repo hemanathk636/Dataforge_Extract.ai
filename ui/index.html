@@ -2377,6 +2377,27 @@ dataset.to_excel(<span class="text-amber-300">"output_styled.xlsx"</span>)
 
         
         // ================= GET APP MODAL LOGIC =================
+        
+        function switchAppModalTab(tab) {
+            const expoBtn = document.getElementById('tab-app-expo-btn');
+            const pwaBtn = document.getElementById('tab-app-pwa-btn');
+            const expoContent = document.getElementById('tab-app-expo-content');
+            const pwaContent = document.getElementById('tab-app-pwa-content');
+
+            if (tab === 'expo') {
+                if (expoContent) expoContent.classList.remove('hidden');
+                if (pwaContent) pwaContent.classList.add('hidden');
+                if (expoBtn) expoBtn.className = "flex-1 py-2 rounded-xl bg-white text-purple-800 shadow-sm text-center transition flex items-center justify-center space-x-1.5 font-bold";
+                if (pwaBtn) pwaBtn.className = "flex-1 py-2 rounded-xl text-slate-600 hover:text-slate-900 text-center transition flex items-center justify-center space-x-1.5 font-semibold";
+            } else {
+                if (expoContent) expoContent.classList.add('hidden');
+                if (pwaContent) pwaContent.classList.remove('hidden');
+                if (pwaBtn) pwaBtn.className = "flex-1 py-2 rounded-xl bg-white text-purple-800 shadow-sm text-center transition flex items-center justify-center space-x-1.5 font-bold";
+                if (expoBtn) expoBtn.className = "flex-1 py-2 rounded-xl text-slate-600 hover:text-slate-900 text-center transition flex items-center justify-center space-x-1.5 font-semibold";
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
         function openGetAppModal() {
             const modal = document.getElementById('get-app-modal');
             if (modal) modal.classList.remove('hidden');
