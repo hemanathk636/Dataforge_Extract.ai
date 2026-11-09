@@ -1,0 +1,63 @@
+{
+  "id": "/?source=pwa",
+  "name": "Extract - Autonomous Web Scraping & Document Intelligence",
+  "short_name": "Extract",
+  "description": "Autonomous web extraction, price monitoring, business lead generation, and PDF invoice parsing.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0c1017",
+  "theme_color": "#7c3aed",
+  "categories": ["productivity", "business", "utilities", "developer"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Execution Hub Workspace",
+      "short_name": "Execution Hub",
+      "description": "Open the autonomous extraction workbench",
+      "url": "/#hub-page",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "E-Commerce Tracker",
+      "short_name": "Products",
+      "description": "Track products, prices, and stock status",
+      "url": "/#hub-page",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "PDF Invoice Extractor",
+      "short_name": "Invoices",
+      "description": "Extract invoices into styled Excel spreadsheets",
+      "url": "/#hub-page",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Business Lead Scraper",
+      "short_name": "Leads",
+      "description": "Scrape verified directory leads into CRM CSV",
+      "url": "/#hub-page",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

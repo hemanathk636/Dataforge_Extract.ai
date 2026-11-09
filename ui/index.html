@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- PWA Manifest & App Icons -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Extract">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
+
     <title>Extract | Next-Gen Autonomous Web & PDF Extraction Platform</title>
         <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -2161,6 +2171,47 @@ dataset.to_excel(<span class="text-amber-300">"output_styled.xlsx"</span>)
 
         let currentUserEmail = "alex.director@enterprise.com";
         let latestPayload = null;
+
+        
+        // ================= PWA INSTALLATION & SERVICE WORKER =================
+        let deferredInstallPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.classList.remove('hidden');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            const installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) installBtn.classList.add('hidden');
+            console.log('[Extract PWA] App successfully installed!');
+        });
+
+        function installPWA() {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                deferredInstallPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('[Extract PWA] User accepted the install prompt');
+                    }
+                    deferredInstallPrompt = null;
+                });
+            } else {
+                alert("To install Extract as an App on your device:\n\n• Windows / Mac (Chrome/Edge): Click the Install icon in your browser address bar.\n• Android: Tap the browser menu (3 dots) -> 'Install App' or 'Add to Home Screen'.\n• iPhone / iPad (Safari): Tap the Share button -> 'Add to Home Screen'.");
+            }
+        }
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((reg) => console.log('[Extract PWA] Service Worker registered with scope:', reg.scope))
+                    .catch((err) => console.log('[Extract PWA] Service Worker registration failed:', err));
+            });
+        }
 
         function showPage(pageId) {
             ['home-page', 'robots-catalog-page', 'api-page', 'hub-page'].forEach(id => {

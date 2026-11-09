@@ -56,10 +56,47 @@ async def root():
         return FileResponse(index_file)
     return {"message": "DataForge Studio Engine Online. Place index.html in /ui directory."}
 
+# ================= PWA ASSETS & SERVICE WORKER ROUTES =================
+@app.get("/manifest.json")
+async def get_manifest():
+    path = os.path.join(UI_DIR, "manifest.json")
+    if os.path.exists(path):
+        return FileResponse(path, media_type="application/manifest+json")
+    raise HTTPException(status_code=404, detail="manifest.json not found")
+
+@app.get("/sw.js")
+async def get_service_worker():
+    path = os.path.join(UI_DIR, "sw.js")
+    if os.path.exists(path):
+        return FileResponse(path, media_type="application/javascript", headers={"Service-Worker-Allowed": "/"})
+    raise HTTPException(status_code=404, detail="sw.js not found")
+
+@app.get("/icon-192.png")
+async def get_icon_192():
+    path = os.path.join(UI_DIR, "icon-192.png")
+    if os.path.exists(path):
+        return FileResponse(path, media_type="image/png")
+    raise HTTPException(status_code=404, detail="icon-192.png not found")
+
+@app.get("/icon-512.png")
+async def get_icon_512():
+    path = os.path.join(UI_DIR, "icon-512.png")
+    if os.path.exists(path):
+        return FileResponse(path, media_type="image/png")
+    raise HTTPException(status_code=404, detail="icon-512.png not found")
+
+@app.get("/icon.svg")
+async def get_icon_svg():
+    path = os.path.join(UI_DIR, "icon.svg")
+    if os.path.exists(path):
+        return FileResponse(path, media_type="image/svg+xml")
+    raise HTTPException(status_code=404, detail="icon.svg not found")
+
 @app.get("/favicon.ico")
 async def favicon():
     return Response(content=FAVICON_SVG, media_type="image/svg+xml")
 
+# ================= EXTRACTION & AUTOMATION ENDPOINTS =================
 @app.post("/api/scrape")
 async def trigger_scrape(req: ScrapeRequest):
     if not req.url.startswith("http://") and not req.url.startswith("https://"):
