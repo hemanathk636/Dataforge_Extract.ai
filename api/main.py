@@ -1,4 +1,6 @@
 import os
+import sys
+import socket
 import uuid
 import re
 from datetime import datetime
@@ -15,7 +17,7 @@ from core.excel_styler import ExcelStyler
 from core.pdf_engine import PDFExtractor
 
 app = FastAPI(
-    title="DataForge Studio API",
+    title="Extract AI Studio API",
     version="2.6.0",
     description="Executive Web Scraping, Business Lead Generation & PDF Invoice Automation Suite"
 )
@@ -44,6 +46,17 @@ FAVICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
 <path d="M30 68 Q50 82 70 68" stroke="#FFFFFF" stroke-width="6" fill="none" stroke-linecap="round"/>
 </svg>"""
 
+def get_lan_ip() -> str:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('10.255.255.255', 1))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = '127.0.0.1'
+    finally:
+        s.close()
+    return ip
+
 class ScrapeRequest(BaseModel):
     url: str
     mode: Optional[str] = "smart"
@@ -54,7 +67,18 @@ async def root():
     index_file = os.path.join(UI_DIR, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return {"message": "DataForge Studio Engine Online. Place index.html in /ui directory."}
+    return {"message": "Extract AI Studio Engine Online. Place index.html in /ui directory."}
+
+@app.get("/api/network-info")
+async def get_network_info():
+    ip = get_lan_ip()
+    port = 8080
+    return {
+        "local_url": f"http://127.0.0.1:{port}",
+        "mobile_url": f"http://{ip}:{port}",
+        "lan_ip": ip,
+        "port": port
+    }
 
 # ================= PWA ASSETS & SERVICE WORKER ROUTES =================
 @app.get("/manifest.json")
@@ -183,7 +207,6 @@ async def upload_pdf(file: UploadFile = File(...)):
 
 @app.get("/api/demo-leads")
 async def get_demo_leads():
-    """Demo endpoint for Project 3: Business Lead Scraper"""
     leads = scraper._generate_lead_sample("yellowpages.com", "https://www.yellowpages.com/search?search_terms=lawyers&geo_location_terms=San+Francisco%2C+CA", 8)
     df = pd.DataFrame(leads)
     file_id = f"crm_leads_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -209,7 +232,6 @@ async def get_demo_leads():
 
 @app.get("/api/demo-invoice")
 async def get_demo_invoice():
-    """Demo endpoint for Project 2: PDF Invoice / Receipt Data Extractor"""
     invoice_rows = [
         {"#": 1, "Item Description": "Cloud Cluster Hosting (Q4)", "Qty": 1, "Unit Price": "$450.00", "Total": "$450.00"},
         {"#": 2, "Item Description": "Automated Web Scraper Pipeline Maintenance", "Qty": 10, "Unit Price": "$65.00", "Total": "$650.00"},
@@ -250,7 +272,6 @@ async def get_demo_invoice():
 
 @app.get("/api/demo-data")
 async def get_demo_data():
-    """Demo endpoint for Project 1: E-Commerce Product & Price Tracker"""
     sample = [
         {"#": 1, "Title": "A Light in the Attic", "Price": "£51.77", "Rating_Or_Tag": "Three", "Availability": "In stock", "Product_URL": "https://books.toscrape.com/", "Image_URL": "https://books.toscrape.com/media/cache/2c/da/2cdad67c44b002e7ead0cc35693c0e8b.jpg"},
         {"#": 2, "Title": "Tipping the Velvet", "Price": "£53.74", "Rating_Or_Tag": "One", "Availability": "In stock", "Product_URL": "https://books.toscrape.com/", "Image_URL": "https://books.toscrape.com/media/cache/26/0c/260c6ae16bce31c8f8c95daddd9f4a1c.jpg"},

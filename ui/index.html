@@ -298,9 +298,7 @@
                             <div class="white-card p-2 rounded-2xl flex flex-col sm:flex-row items-center gap-2 max-w-xl shadow-xl shadow-purple-900/5 border-purple-200">
                                 <div class="relative flex-1 w-full">
                                     <i data-lucide="mail" class="w-4 h-4 text-purple-600 absolute left-3.5 top-3.5"></i>
-                                    <input type="email" id="hero-work-email" placeholder="Enter your work email" 
-                                        value="alex.director@enterprise.com"
-                                        class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3 py-3 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-purple-500 font-medium transition">
+                                    <input type="email" id="hero-work-email" placeholder="Enter your work email" value="" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3 py-3 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-purple-500 font-medium transition">
                                 </div>
                                 <button onclick="proceedToHubFromEmail()" class="w-full sm:w-auto px-7 py-3 rounded-xl purple-gradient hover:opacity-95 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-2 shrink-0 shadow-lg shadow-purple-600/25 group" title="Enter email to open the dedicated Execution Hub workspace">
                                     <span>Get started for free</span>
@@ -1526,7 +1524,7 @@
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     <div class="text-xs text-slate-700">
                         <span class="text-slate-400 font-semibold">Active Client:</span>
-                        <span id="hub-user-email-display" class="font-bold text-purple-900 ml-1">alex.director@enterprise.com</span>
+                        <span id="hub-user-email-display" class="font-bold text-purple-900 ml-1">Not connected</span>
                     </div>
                     <button onclick="editHubEmail()" class="text-[11px] font-bold text-purple-600 hover:underline ml-1">Change</button>
                 </div>
@@ -1557,7 +1555,7 @@
                 <div class="flex flex-col sm:flex-row items-center gap-3">
                     <div class="relative flex-1 w-full">
                         <i data-lucide="mail" class="w-4 h-4 text-purple-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
-                        <input id="hub-email-input" type="email" value="alex.director@enterprise.com" placeholder="Client Work Email" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition" />
+                        <input id="hub-email-input" type="email" value="" placeholder="Enter your work email" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition" />
                     </div>
                     <button onclick="setHubEmail()" class="px-5 py-3 rounded-2xl border border-purple-200 text-purple-700 font-bold text-xs hover:bg-purple-50 transition flex items-center space-x-1.5 whitespace-nowrap">
                         <span>Save Client</span>
@@ -1570,7 +1568,7 @@
                     <div class="flex flex-col sm:flex-row items-center gap-3">
                         <div class="relative flex-1 w-full">
                             <i data-lucide="link" class="w-4 h-4 text-purple-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
-                            <input id="target-url" type="url" value="https://api.github.com/repositories" placeholder="Paste target website URL (e.g. books.toscrape.com, api.github.com/repositories)" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition" />
+                            <input id="target-url" type="url" value="" placeholder="Paste target website URL (e.g. books.toscrape.com, api.github.com/repositories)" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition" />
                         </div>
                         <button id="extract-now-btn" onclick="runScraper()" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl purple-gradient text-white text-xs font-bold shadow-lg shadow-purple-600/30 hover:opacity-95 transition flex items-center justify-center space-x-2 whitespace-nowrap">
                             <i data-lucide="zap" class="w-4 h-4 fill-white"></i>
@@ -2169,7 +2167,7 @@ dataset.to_excel(<span class="text-amber-300">"output_styled.xlsx"</span>)
     <!-- INTERACTIVE 3D HOLOGRAPHIC CYBER EXTRACTION ENGINE (THREE.JS) -->
     <script>
 
-        let currentUserEmail = "alex.director@enterprise.com";
+        let currentUserEmail = "";
         let latestPayload = null;
 
         
@@ -2189,6 +2187,42 @@ dataset.to_excel(<span class="text-amber-300">"output_styled.xlsx"</span>)
             if (installBtn) installBtn.classList.add('hidden');
             console.log('[Extract PWA] App successfully installed!');
         });
+
+        
+        // ================= GET APP MODAL LOGIC =================
+        function openGetAppModal() {
+            const modal = document.getElementById('get-app-modal');
+            if (modal) modal.classList.remove('hidden');
+            fetch('/api/network-info')
+                .then(r => r.json())
+                .then(info => {
+                    if (info.mobile_url) {
+                        const input = document.getElementById('mobile-network-url');
+                        if (input) input.value = info.mobile_url;
+                        const qr = document.getElementById('mobile-qr-img');
+                        if (qr) qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(info.mobile_url)}`;
+                    }
+                })
+                .catch(() => {});
+            lucide.createIcons();
+        }
+
+        function closeGetAppModal() {
+            const modal = document.getElementById('get-app-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function copyMobileUrl() {
+            const input = document.getElementById('mobile-network-url');
+            if (!input) return;
+            navigator.clipboard.writeText(input.value).then(() => {
+                const btn = document.getElementById('copy-mobile-btn');
+                if (btn) {
+                    btn.textContent = "Copied!";
+                    setTimeout(() => { btn.textContent = "Copy"; }, 2000);
+                }
+            });
+        }
 
         function installPWA() {
             if (deferredInstallPrompt) {
@@ -3122,10 +3156,11 @@ Notifications will be sent to ${currentUserEmail}`);
 
         async function runScraper() {
             const urlInput = document.getElementById("target-url");
-            let url = urlInput ? urlInput.value.trim() : "https://api.github.com/repositories";
+            let url = urlInput ? urlInput.value.trim() : "";
             if (!url) {
-                url = "https://api.github.com/repositories";
-                if (urlInput) urlInput.value = url;
+                alert("Please enter a target URL or choose one of the 3 Flagship Project chips below!");
+                if (urlInput) urlInput.focus();
+                return;
             }
             const modeSelect = document.getElementById("scrape-mode");
             const mode = modeSelect ? modeSelect.value : "smart";
@@ -3380,6 +3415,66 @@ Notifications will be sent to ${currentUserEmail}`);
                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                 <span>Copy Proposal</span>
             </button>
+        </div>
+    </div>
+
+
+    <!-- ================= GET APP & MOBILE QR MODAL ================= -->
+    <div id="get-app-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 p-6 sm:p-7 space-y-5 relative animate-in fade-in zoom-in-95 duration-200">
+            <button onclick="closeGetAppModal()" class="absolute top-5 right-5 p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="space-y-1">
+                <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 text-[11px] font-bold">
+                    <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                    <span>Installable PWA Application</span>
+                </div>
+                <h3 class="text-xl font-black text-slate-900">Get Extract on Mobile & Desktop</h3>
+                <p class="text-xs text-slate-500">Run autonomous extractions anywhere with zero app store downloads.</p>
+            </div>
+
+            <!-- Mobile Phone QR Code & Wi-Fi Link Section -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
+                        <i data-lucide="wifi" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span>Open on Mobile (Same Wi-Fi)</span>
+                    </span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">Live Network Link</span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="w-28 h-28 bg-white p-1 rounded-xl border border-slate-200 flex items-center justify-center shrink-0 shadow-sm">
+                        <img id="mobile-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=http://10.228.155.159:8080" class="w-full h-full object-contain rounded" alt="Mobile QR Code">
+                    </div>
+                    <div class="space-y-2 text-xs">
+                        <p class="text-slate-600 leading-relaxed text-[11px]">
+                            Scan with your phone's camera, or open this URL in your mobile browser:
+                        </p>
+                        <div class="flex items-center space-x-1.5">
+                            <input id="mobile-network-url" type="text" readonly value="http://10.228.155.159:8080" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-mono text-purple-700 select-all outline-none">
+                            <button onclick="copyMobileUrl()" id="copy-mobile-btn" class="px-2.5 py-1 bg-slate-900 hover:bg-purple-700 text-white rounded-lg text-[11px] font-bold transition whitespace-nowrap">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-1 text-[10px] text-slate-400 space-y-0.5">
+                    <div>• <strong>Android:</strong> Tap the browser menu (3 dots) &rarr; <em>"Install App"</em></div>
+                    <div>• <strong>iPhone / iPad:</strong> Tap Share &rarr; <em>"Add to Home Screen"</em></div>
+                </div>
+            </div>
+
+            <!-- Desktop App Installation Button -->
+            <div class="pt-1">
+                <button onclick="installPWA(); closeGetAppModal();" class="w-full py-3 rounded-2xl purple-gradient text-white text-xs font-bold shadow-lg shadow-purple-600/30 hover:opacity-95 transition flex items-center justify-center space-x-2">
+                    <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                    <span>Install on This Computer (Desktop App)</span>
+                </button>
+            </div>
         </div>
     </div>
 
