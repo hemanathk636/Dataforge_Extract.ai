@@ -176,8 +176,11 @@ async def trigger_scrape(req: ScrapeRequest):
 
 @app.post("/api/extract-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
-    if not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only .pdf files are supported")
+    filename = file.filename.lower()
+    is_pdf = filename.endswith(".pdf")
+    is_img = any(filename.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".webp"])
+    if not is_pdf and not is_img:
+        raise HTTPException(status_code=400, detail="Only .pdf, .jpg, .jpeg, and .png files are supported")
 
     temp_path = os.path.join(EXPORTS_DIR, f"temp_{uuid.uuid4().hex[:8]}.pdf")
     try:
@@ -456,5 +459,40 @@ async def list_verified_users():
         except Exception:
             pass
     return {"success": True, "data": []}
+
+
+# ================= IN-APP EDITED DATA EXPORT (MOBILE APP SYNC) =================
+class ExportCustomDataRequest(BaseModel):
+    data: List[Dict[str, Any]]
+    filename_prefix: Optional[str] = "mobile_edited_data"
+    sheet_name: Optional[str] = "Edited Items"
+
+@app.post("/api/export-custom-data")
+async def export_custom_data(req: ExportCustomDataRequest):
+    if not req.data:
+        raise HTTPException(status_code=400, detail="No records provided to export.")
+
+    df = pd.DataFrame(req.data)
+    file_id = f"{req.filename_prefix}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    excel_filename = f"{file_id}.xlsx"
+    csv_filename = f"{file_id}.csv"
+
+    excel_path = os.path.join(EXPORTS_DIR, excel_filename)
+    csv_path = os.path.join(EXPORTS_DIR, csv_filename)
+
+    clean_sheet = re.sub(r'[\[\]\*\?\/\:]', '_', str(req.sheet_name))[:31]
+    ExcelStyler.export_styled_excel(df, excel_path, sheet_name=clean_sheet)
+    df.to_csv(csv_path, index=False)
+
+    return {
+        "success": True,
+        "count": len(df),
+        "columns": list(df.columns),
+        "data": req.data,
+        "downloads": {
+            "excel": f"/api/download/{excel_filename}",
+            "csv": f"/api/download/{csv_filename}"
+        }
+    }
 
 app.mount("/static", StaticFiles(directory=UI_DIR), name="static")
