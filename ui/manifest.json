@@ -3,25 +3,38 @@
   "name": "Extract - Autonomous Web Scraping & Document Intelligence",
   "short_name": "Extract",
   "description": "Autonomous web extraction, price monitoring, business lead generation, and PDF invoice parsing.",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0c1017",
+  "background_color": "#ffffff",
   "theme_color": "#7c3aed",
+  "prefer_related_applications": false,
   "categories": ["productivity", "business", "utilities", "developer"],
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icon.svg",

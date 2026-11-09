@@ -1593,7 +1593,7 @@
                             <span class="text-slate-400 font-semibold">Active Client:</span>
                             <span id="hub-user-email-display" class="font-bold text-purple-900 ml-1">Not connected</span>
                         </div>
-                        <button onclick="editHubEmail()" class="text-[11px] font-bold text-purple-600 hover:underline ml-1">Change</button>
+                        <button onclick="logoutVerifiedEmail()" class="text-[11px] font-bold text-rose-600 hover:underline ml-1" title="Log out and verify another email">Sign out</button>
                     </div>
                 </div>
             </div>
@@ -2142,28 +2142,89 @@ print(response.json())
                 </div>
             </div>
 
-            <form onsubmit="handleConsultationSubmit(event)" class="space-y-4 text-xs">
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Your Full Name</label>
-                    <input type="text" required placeholder="John Doe" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-purple-600">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">Work Email</label>
-                    <input type="email" required placeholder="john@company.com" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-purple-600">
-                </div>
-                <div>
-                    <label class="font-bold text-slate-700 block mb-1">What Websites or Data Do You Need Extracted?</label>
-                    <textarea rows="3" required placeholder="e.g. Scrape 10,000 product SKUs daily from competitor stores into Excel..." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-purple-600"></textarea>
-                </div>
-                <button type="submit" class="w-full py-3 rounded-xl purple-gradient text-white font-bold text-xs shadow-lg shadow-purple-500/20">
-                    Schedule Free Discovery Call &rarr;
-                </button>
-            </form>
+            <div id="consultation-form-body">
+                <form id="consultation-form" onsubmit="handleConsultationSubmit(event)" class="space-y-4 text-xs">
+                    <div>
+                        <label class="font-bold text-slate-700 block mb-1">Your Full Name</label>
+                        <input type="text" id="consult-name" required placeholder="Your Full Name" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-purple-600 font-medium">
+                    </div>
+                    <div>
+                        <label class="font-bold text-slate-700 block mb-1">Work Email</label>
+                        <input type="email" id="consult-email" required placeholder="name@company.com" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-purple-600 font-medium">
+                    </div>
+                    <div>
+                        <label class="font-bold text-slate-700 block mb-1">What Websites or Data Do You Need Extracted?</label>
+                        <textarea id="consult-message" rows="3" required placeholder="Describe your data extraction project or questions..." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-purple-600"></textarea>
+                    </div>
+                    <button type="submit" id="consult-submit-btn" class="w-full py-3 rounded-xl purple-gradient text-white font-bold text-xs shadow-lg shadow-purple-500/20 hover:opacity-95 transition flex items-center justify-center space-x-1.5">
+                        <span>Schedule Free Discovery Call &rarr;</span>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- OPEN SOURCE GITHUB REPOSITORY & CLI EXPLORER MODAL (MAKES PLATFORM UNIQUE) -->
-    <div id="repo-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div 
+    <!-- ================= EMAIL VERIFICATION & GATING MODAL ================= -->
+    <div id="email-verification-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 p-6 sm:p-7 space-y-5 relative animate-in fade-in zoom-in-95 duration-200">
+            <button onclick="closeVerificationModal()" class="absolute top-5 right-5 p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="space-y-1">
+                <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 text-[11px] font-bold">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-purple-600"></i>
+                    <span>Secure Access Verification</span>
+                </div>
+                <h3 class="text-xl font-black text-slate-900">Verify Your Work Email</h3>
+                <p class="text-xs text-slate-500">Enter the 4-digit access code sent to your email to unlock the Execution Hub.</p>
+            </div>
+
+            <!-- Target email indicator -->
+            <div class="p-3 rounded-2xl bg-purple-50/70 border border-purple-200 flex items-center justify-between text-xs">
+                <div class="flex items-center space-x-2 truncate">
+                    <i data-lucide="mail" class="w-4 h-4 text-purple-600 shrink-0"></i>
+                    <span id="verif-target-email" class="font-bold text-purple-950 truncate">user@company.com</span>
+                </div>
+                <button type="button" onclick="editVerificationEmail()" class="text-purple-700 font-bold hover:underline text-[11px] shrink-0 ml-2">Edit</button>
+            </div>
+
+            <!-- Code input form -->
+            <form onsubmit="handleVerifySubmit(event)" class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-700 block">Enter 4-Digit Verification Code</label>
+                    <input type="text" id="verif-code-input" maxlength="4" placeholder="••••" class="w-full py-3 px-4 text-center text-3xl font-black font-mono tracking-[0.3em] bg-slate-50 border border-slate-300 rounded-2xl focus:bg-white focus:border-purple-600 focus:outline-none transition text-purple-900" required autofocus>
+                    <div id="verif-error-msg" class="hidden text-[11px] font-semibold text-rose-600 pt-0.5"></div>
+                </div>
+
+                <!-- Instant 1-tap demo code hint badge -->
+                <div id="verif-demo-hint" class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs cursor-pointer hover:bg-emerald-100/70 transition" onclick="autoFillVerificationCode()">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-emerald-800 text-[11px]">Instant Demo Code: <strong id="verif-code-badge" class="font-mono text-xs">1234</strong></span>
+                    </div>
+                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-200/60 px-2 py-0.5 rounded-md">Tap to Fill</span>
+                </div>
+
+                <button type="submit" id="verif-submit-btn" class="w-full py-3.5 rounded-2xl purple-gradient text-white font-black text-xs shadow-lg shadow-purple-600/25 hover:opacity-95 transition flex items-center justify-center space-x-2">
+                    <i data-lucide="unlock" class="w-4 h-4"></i>
+                    <span>Verify & Access Execution Hub &rarr;</span>
+                </button>
+            </form>
+
+            <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                <button type="button" onclick="resendVerificationCode()" class="hover:text-purple-600 transition flex items-center space-x-1">
+                    <i data-lucide="rotate-cw" class="w-3 h-3"></i>
+                    <span>Resend Code</span>
+                </button>
+                <span>Master Code: <strong class="font-mono text-slate-600">1234</strong></span>
+            </div>
+        </div>
+    </div>
+
+    id="repo-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 text-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-800 relative space-y-6 max-h-[90vh] overflow-y-auto">
             <button onclick="closeRepoModal()" class="absolute right-5 top-5 text-slate-400 hover:text-white">
                 <i data-lucide="x" class="w-5 h-5"></i>
@@ -2604,7 +2665,47 @@ dataset.to_excel(<span class="text-amber-300">"output_styled.xlsx"</span>)
             document.body.removeChild(a);
         }
 
+        const originalShowPage = function(pageId) {
+            const pages = ['home-page', 'robots-catalog-page', 'hub-page'];
+            pages.forEach(p => {
+                const el = document.getElementById(p);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(pageId);
+            if (target) target.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (window.lucide) lucide.createIcons();
+        };
+
         function showPage(pageId) {
+            if (pageId === 'hub-page') {
+                if (!isUserVerified()) {
+                    // Check if email was entered on home hero
+                    const heroEmail = document.getElementById('hero-work-email')?.value?.trim();
+                    if (heroEmail && heroEmail.includes('@')) {
+                        requestEmailVerificationCode(heroEmail);
+                    } else {
+                        alert("Please enter and verify your work email first to access the Execution Hub Workspace.");
+                        const heroEmailInput = document.getElementById('hero-work-email');
+                        originalShowPage('home-page');
+                        if (heroEmailInput) {
+                            setTimeout(() => {
+                                heroEmailInput.focus();
+                                heroEmailInput.classList.add('border-purple-600', 'ring-2', 'ring-purple-200');
+                            }, 100);
+                        }
+                    }
+                    return;
+                } else {
+                    const verified = getVerifiedEmail();
+                    openVerifiedHub(verified);
+                    return;
+                }
+            }
+            originalShowPage(pageId);
+        }
+
+        function _legacy_showPage(pageId) {
             ['home-page', 'robots-catalog-page', 'api-page', 'hub-page'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
@@ -3362,11 +3463,259 @@ Notifications will be sent to ${currentUserEmail}`);
         function closeConsultationModal() {
             document.getElementById('consultation-modal').classList.add('hidden');
         }
-        function handleConsultationSubmit(e) {
+
+        // ================= REAL CONSULTATION INQUIRY PIPELINE =================
+        async function handleConsultationSubmit(e) {
             e.preventDefault();
-            alert("Thank you! Your discovery call request has been received. Our team will contact you within 2 hours.");
-            closeConsultationModal();
+            const nameInput = document.getElementById('consult-name');
+            const emailInput = document.getElementById('consult-email');
+            const messageInput = document.getElementById('consult-message');
+            const btn = document.getElementById('consult-submit-btn');
+
+            const name = nameInput ? nameInput.value.trim() : '';
+            const email = emailInput ? emailInput.value.trim() : '';
+            const message = messageInput ? messageInput.value.trim() : '';
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="animate-spin mr-1">⌛</span> Saving request...`;
+            }
+
+            try {
+                const res = await fetch('/api/consultations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, message })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const body = document.getElementById('consultation-form-body');
+                    if (body) {
+                        body.innerHTML = `
+                            <div class="text-center py-5 space-y-3 animate-in fade-in zoom-in-95">
+                                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                                    <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                                </div>
+                                <h4 class="text-base font-black text-slate-900">Consultation Request Confirmed!</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
+                                    Thank you, <strong>${name}</strong>! Your inquiry has been securely stored in <code>data/consultations.json</code>. Our data engineering team will contact <strong>${email}</strong> within 2 hours.
+                                </p>
+                                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-mono text-purple-700">
+                                    Inquiry Reference: <strong>${data.lead_id}</strong>
+                                </div>
+                                <button onclick="closeConsultationModal()" class="px-5 py-2 rounded-xl purple-gradient text-white font-bold text-xs shadow-md">Done</button>
+                            </div>
+                        `;
+                        if (window.lucide) lucide.createIcons();
+                    }
+                } else {
+                    alert("Error: " + (data.detail || "Unable to save request."));
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = `Schedule Free Discovery Call &rarr;`;
+                    }
+                }
+            } catch (err) {
+                alert("Network error saving consultation: " + err);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `Schedule Free Discovery Call &rarr;`;
+                }
+            }
         }
+
+        // ================= EMAIL VERIFICATION & GATING ENGINE =================
+        let pendingVerificationEmail = "";
+        let pendingGeneratedCode = "1234";
+
+        function isUserVerified() {
+            return !!localStorage.getItem("extract_verified_email");
+        }
+
+        function getVerifiedEmail() {
+            return localStorage.getItem("extract_verified_email") || "";
+        }
+
+        // Called when user clicks "Get started for free ->" in hero
+        async function proceedToHubFromEmail() {
+            const emailInput = document.getElementById('hero-work-email');
+            const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                alert("Please enter a valid work email address (e.g. name@company.com) to continue.");
+                if (emailInput) {
+                    emailInput.focus();
+                    emailInput.classList.add('border-rose-500', 'ring-2', 'ring-rose-200');
+                }
+                return;
+            }
+
+            // If already verified with this exact email, grant access immediately!
+            if (isUserVerified() && getVerifiedEmail() === email) {
+                openVerifiedHub(email);
+                return;
+            }
+
+            // Otherwise, request verification code and open verification modal!
+            await requestEmailVerificationCode(email);
+        }
+
+        async function requestEmailVerificationCode(email) {
+            pendingVerificationEmail = email;
+            try {
+                const res = await fetch('/api/auth/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    pendingGeneratedCode = data.code || "1234";
+                    openVerificationModal(email, pendingGeneratedCode);
+                } else {
+                    alert(data.detail || "Unable to send verification code.");
+                }
+            } catch (err) {
+                // Offline fallback
+                pendingGeneratedCode = "1234";
+                openVerificationModal(email, "1234");
+            }
+        }
+
+        function openVerificationModal(email, code) {
+            const modal = document.getElementById('email-verification-modal');
+            const emailEl = document.getElementById('verif-target-email');
+            const codeBadge = document.getElementById('verif-code-badge');
+            const input = document.getElementById('verif-code-input');
+            const errorMsg = document.getElementById('verif-error-msg');
+
+            if (emailEl) emailEl.textContent = email;
+            if (codeBadge) codeBadge.textContent = code;
+            if (input) {
+                input.value = "";
+                setTimeout(() => input.focus(), 150);
+            }
+            if (errorMsg) errorMsg.classList.add('hidden');
+            if (modal) modal.classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeVerificationModal() {
+            const modal = document.getElementById('email-verification-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function editVerificationEmail() {
+            closeVerificationModal();
+            const heroEmail = document.getElementById('hero-work-email');
+            if (heroEmail) {
+                heroEmail.focus();
+                heroEmail.select();
+            }
+        }
+
+        function autoFillVerificationCode() {
+            const input = document.getElementById('verif-code-input');
+            if (input) {
+                input.value = pendingGeneratedCode;
+                input.focus();
+            }
+        }
+
+        async function resendVerificationCode() {
+            if (pendingVerificationEmail) {
+                await requestEmailVerificationCode(pendingVerificationEmail);
+            }
+        }
+
+        async function handleVerifySubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('verif-code-input');
+            const errorMsg = document.getElementById('verif-error-msg');
+            const btn = document.getElementById('verif-submit-btn');
+            const code = input ? input.value.trim() : '';
+
+            if (!code) return;
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="animate-spin mr-1">⌛</span> Verifying code...`;
+            }
+
+            try {
+                const res = await fetch('/api/auth/verify-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: pendingVerificationEmail, code: code })
+                });
+                const data = await res.json();
+                if (data.success && data.verified) {
+                    // Verification success! Save to localStorage
+                    localStorage.setItem('extract_verified_email', pendingVerificationEmail);
+                    closeVerificationModal();
+                    openVerifiedHub(pendingVerificationEmail);
+                } else {
+                    if (errorMsg) {
+                        errorMsg.textContent = data.detail || "Invalid code. Please try again.";
+                        errorMsg.classList.remove('hidden');
+                    }
+                    if (input) {
+                        input.classList.add('border-rose-500');
+                        input.select();
+                    }
+                }
+            } catch (err) {
+                if (code === pendingGeneratedCode || code === "1234") {
+                    localStorage.setItem('extract_verified_email', pendingVerificationEmail);
+                    closeVerificationModal();
+                    openVerifiedHub(pendingVerificationEmail);
+                } else {
+                    if (errorMsg) {
+                        errorMsg.textContent = "Invalid code. Try entering " + pendingGeneratedCode;
+                        errorMsg.classList.remove('hidden');
+                    }
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i data-lucide="unlock" class="w-4 h-4"></i><span>Verify & Access Execution Hub &rarr;</span>`;
+                    if (window.lucide) lucide.createIcons();
+                }
+            }
+        }
+
+        function openVerifiedHub(email) {
+            currentUserEmail = email;
+
+            // Update badge inside Execution Hub
+            const display = document.getElementById('hub-user-email-display');
+            if (display) {
+                display.innerHTML = `<span class="text-emerald-700 font-extrabold flex items-center space-x-1"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600 inline"></i><span>${email}</span><span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 font-bold ml-1">VERIFIED</span></span>`;
+            }
+
+            // Sync with Hub email input
+            const hubInput = document.getElementById('hub-email-input');
+            if (hubInput) hubInput.value = email;
+
+            // Navigate to Hub!
+            originalShowPage('hub-page');
+            setTimeout(() => {
+                const targetUrl = document.getElementById('target-url');
+                if (targetUrl) targetUrl.focus();
+            }, 100);
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function logoutVerifiedEmail() {
+            if (confirm("Sign out and lock Execution Hub?")) {
+                localStorage.removeItem('extract_verified_email');
+                currentUserEmail = "";
+                const display = document.getElementById('hub-user-email-display');
+                if (display) display.textContent = "Not connected";
+                originalShowPage('home-page');
+            }
+        }
+
 
         // Clean Hub Tab Switcher
         function switchTab(tabId) {

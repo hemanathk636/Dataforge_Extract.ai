@@ -1,11 +1,14 @@
 import os
+import json
+import time
+import random
 import sys
 import socket
 import uuid
 import re
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, Request, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, Response
@@ -33,6 +36,8 @@ app.add_middleware(
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXPORTS_DIR = os.path.join(BASE_DIR, "exports")
 UI_DIR = os.path.join(BASE_DIR, "ui")
+DATA_DIR = os.path.join(BASE_DIR, "data")
+os.makedirs(DATA_DIR, exist_ok=True)
 
 os.makedirs(EXPORTS_DIR, exist_ok=True)
 os.makedirs(UI_DIR, exist_ok=True)
@@ -316,5 +321,140 @@ async def download_file(filename: str):
             media_type="application/octet-stream"
         )
     raise HTTPException(status_code=404, detail="File not found or expired")
+
+
+# ================= CONSULTATION & LEAD GENERATION PIPELINE =================
+class ConsultationRequest(BaseModel):
+    name: str
+    email: str
+    message: Optional[str] = ""
+
+@app.post("/api/consultations")
+async def submit_consultation(req: ConsultationRequest, request: Request):
+    consultations_file = os.path.join(DATA_DIR, "consultations.json")
+    existing = []
+    if os.path.exists(consultations_file):
+        try:
+            with open(consultations_file, "r", encoding="utf-8") as f:
+                existing = json.load(f)
+        except Exception:
+            existing = []
+
+    client_ip = request.client.host if request.client else "unknown"
+    new_entry = {
+        "id": f"cons_{int(time.time())}",
+        "name": req.name.strip(),
+        "email": req.email.strip().lower(),
+        "message": req.message.strip(),
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "client_ip": client_ip,
+        "status": "New Lead"
+    }
+    existing.insert(0, new_entry)
+    with open(consultations_file, "w", encoding="utf-8") as f:
+        json.dump(existing, f, indent=2)
+
+    return {
+        "success": True,
+        "message": f"Discovery call request saved for {req.name}! Our team will contact {req.email}.",
+        "lead_id": new_entry["id"],
+        "stored_location": "data/consultations.json",
+        "entry": new_entry
+    }
+
+@app.get("/api/consultations")
+async def get_consultations():
+    consultations_file = os.path.join(DATA_DIR, "consultations.json")
+    if os.path.exists(consultations_file):
+        try:
+            with open(consultations_file, "r", encoding="utf-8") as f:
+                return {"success": True, "data": json.load(f)}
+        except Exception:
+            pass
+    return {"success": True, "data": []}
+
+# ================= EMAIL VERIFICATION & GATING ENGINE =================
+class SendCodeRequest(BaseModel):
+    email: str
+
+class VerifyCodeRequest(BaseModel):
+    email: str
+    code: str
+
+ACTIVE_CODES: Dict[str, Dict[str, Any]] = {}
+
+@app.post("/api/auth/send-code")
+async def send_verification_code(req: SendCodeRequest):
+    email = req.email.strip().lower()
+    if not re.match(r"^[^@]+@[^@]+\.[^@]+$", email):
+        raise HTTPException(status_code=400, detail="Please enter a valid work email address (e.g. name@company.com).")
+
+    # Generate 4-digit verification code
+    code = f"{random.randint(1000, 9999)}"
+    ACTIVE_CODES[email] = {
+        "code": code,
+        "expires_at": time.time() + 600,
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    return {
+        "success": True,
+        "message": f"Verification code generated for {email}",
+        "email": email,
+        "code": code,
+        "expires_in_seconds": 600
+    }
+
+@app.post("/api/auth/verify-code")
+async def verify_code(req: VerifyCodeRequest):
+    email = req.email.strip().lower()
+    code = req.code.strip()
+
+    record = ACTIVE_CODES.get(email)
+    # Master demo override code '1234' or exact match
+    if not record and code != "1234":
+        raise HTTPException(status_code=400, detail="No active verification code found for this email. Please request a new code.")
+
+    if record and record["expires_at"] < time.time() and code != "1234":
+        raise HTTPException(status_code=400, detail="Verification code has expired. Please request a new code.")
+
+    if (record and record["code"] == code) or code == "1234":
+        # Persist verified user
+        users_file = os.path.join(DATA_DIR, "verified_users.json")
+        users = []
+        if os.path.exists(users_file):
+            try:
+                with open(users_file, "r", encoding="utf-8") as f:
+                    users = json.load(f)
+            except Exception:
+                users = []
+
+        if not any(u.get("email") == email for u in users):
+            users.insert(0, {
+                "email": email,
+                "verified_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            })
+            with open(users_file, "w", encoding="utf-8") as f:
+                json.dump(users, f, indent=2)
+
+        return {
+            "success": True,
+            "verified": True,
+            "email": email,
+            "message": "Email verified successfully! Access granted to Execution Hub Workspace."
+        }
+
+    raise HTTPException(status_code=400, detail="Invalid verification code. Please check the code and try again.")
+
+@app.get("/api/auth/verified-users")
+async def list_verified_users():
+    users_file = os.path.join(DATA_DIR, "verified_users.json")
+    if os.path.exists(users_file):
+        try:
+            with open(users_file, "r", encoding="utf-8") as f:
+                return {"success": True, "data": json.load(f)}
+        except Exception:
+            pass
+    return {"success": True, "data": []}
 
 app.mount("/static", StaticFiles(directory=UI_DIR), name="static")
