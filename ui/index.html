@@ -167,11 +167,56 @@
             border: 1px solid rgba(255, 255, 255, 0.14);
             box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.45);
         }
+    
+        /* ================= MOBILE APP MODE & ERGONOMICS ================= */
+        @media (max-width: 768px), (display-mode: standalone) {
+            body {
+                padding-bottom: 76px !important; /* Space for bottom app bar */
+            }
+            .desktop-nav-links {
+                display: none !important;
+            }
+        }
+        .bottom-tab-active {
+            color: #7c3aed !important;
+            font-weight: 800 !important;
+        }
+        .bottom-tab-active svg {
+            color: #7c3aed !important;
+            stroke-width: 2.5px !important;
+        }
+        .mobile-item-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+            transition: all 0.2s ease;
+        }
+        .mobile-item-card:hover {
+            border-color: #c084fc;
+            box-shadow: 0 8px 16px -4px rgba(124, 58, 237, 0.1);
+        }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-slate-50 selection:bg-purple-600 selection:text-white">
 
     <!-- MAIN NAVBAR: BRAND "Extract" WITH 3 BROWSE-AI MEGA MENUS -->
+        <!-- ================= PROMINENT TOP ANNOUNCEMENT BANNER FOR GET APP ================= -->
+    <div id="top-get-app-banner" class="bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 text-white text-xs font-medium py-2 px-4 shadow-sm border-b border-purple-500/30">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-2 truncate">
+                <span class="px-2 py-0.5 rounded-full bg-emerald-400 text-slate-900 font-black text-[10px] tracking-wide shrink-0">PWA READY</span>
+                <span class="truncate">📲 <strong>Extract Mobile & Desktop App:</strong> Run web extractions & download Excel files on Android, iPhone & PC with zero app store install.</span>
+            </div>
+            <button onclick="openGetAppModal()" class="shrink-0 ml-3 px-3 py-1 rounded-xl bg-white hover:bg-purple-50 text-purple-900 font-extrabold text-[11px] transition shadow-md flex items-center space-x-1.5 hover:scale-105 active:scale-95">
+                <i data-lucide="smartphone" class="w-3.5 h-3.5 text-purple-600"></i>
+                <span>Get App (Free)</span>
+            </button>
+        </div>
+    </div>
+
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div class="max-w-7xl mx-auto px-6 h-18 py-3.5 flex items-center justify-between">
             
@@ -254,11 +299,14 @@
 
             <!-- Action Buttons with Rich Details -->
             <div class="flex items-center space-x-3">
-                <!-- GET APP BUTTON (PROMINENT ON ALL SCREENS) -->
-                <button onclick="openGetAppModal()" class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 text-xs font-bold transition shadow-sm hover:scale-[1.02] active:scale-[0.98]" title="Get Extract App on Mobile & Desktop">
-                    <i data-lucide="smartphone" class="w-4 h-4 text-purple-600"></i>
-                    <span>Get App</span>
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <!-- GET APP BUTTON (HIGH-CONTRAST & UNMISSABLE ON ALL SCREENS) -->
+                <button onclick="openGetAppModal()" class="inline-flex items-center space-x-2 px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-800 text-white text-xs font-extrabold shadow-md shadow-purple-600/30 hover:scale-105 active:scale-95 transition" title="Get Extract App on Mobile & Desktop">
+                    <i data-lucide="smartphone" class="w-4 h-4 text-white"></i>
+                    <span class="tracking-wide">Get App</span>
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                    </span>
                 </button>
                 <button onclick="openConsultationModal()" class="hidden sm:inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition" title="Book a 1-on-1 scraping architecture consultation">
                     <i data-lucide="phone-call" class="w-3.5 h-3.5 text-slate-500"></i>
@@ -1534,13 +1582,19 @@
                     <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight pt-2">Execution Hub Workspace</h1>
                     <p class="text-xs text-slate-500">Autonomous extraction, multi-format delivery, and automated client deliverable generator.</p>
                 </div>
-                <div class="flex items-center space-x-3 bg-purple-50 border border-purple-200 px-4 py-2.5 rounded-2xl">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <div class="text-xs text-slate-700">
-                        <span class="text-slate-400 font-semibold">Active Client:</span>
-                        <span id="hub-user-email-display" class="font-bold text-purple-900 ml-1">Not connected</span>
+                <div class="flex items-center space-x-2.5">
+                    <button onclick="openGetAppModal()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-black shadow-md shadow-purple-600/25 transition flex items-center space-x-1.5 hover:scale-105 active:scale-95" title="Open on Mobile / Install App">
+                        <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                        <span>Get App</span>
+                    </button>
+                    <div class="flex items-center space-x-3 bg-purple-50 border border-purple-200 px-3.5 py-2 rounded-2xl">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <div class="text-xs text-slate-700">
+                            <span class="text-slate-400 font-semibold">Active Client:</span>
+                            <span id="hub-user-email-display" class="font-bold text-purple-900 ml-1">Not connected</span>
+                        </div>
+                        <button onclick="editHubEmail()" class="text-[11px] font-bold text-purple-600 hover:underline ml-1">Change</button>
                     </div>
-                    <button onclick="editHubEmail()" class="text-[11px] font-bold text-purple-600 hover:underline ml-1">Change</button>
                 </div>
             </div>
 
@@ -1582,7 +1636,11 @@
                     <div class="flex flex-col sm:flex-row items-center gap-3">
                         <div class="relative flex-1 w-full">
                             <i data-lucide="link" class="w-4 h-4 text-purple-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
-                            <input id="target-url" type="url" value="" placeholder="Paste target website URL (e.g. books.toscrape.com, api.github.com/repositories)" class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition" />
+                            <input id="target-url" type="url" value="" placeholder="Paste target website URL or API endpoint..." class="w-full pl-11 pr-20 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition" />
+                            <button type="button" onclick="pasteClipboardToUrl()" class="absolute right-2.5 top-1/2 -translate-y-1/2 px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-[11px] font-bold border border-purple-200 flex items-center space-x-1 transition active:scale-95 shadow-sm" title="Paste URL from your phone or PC clipboard">
+                                <i data-lucide="clipboard" class="w-3 h-3 text-purple-600"></i>
+                                <span>Paste</span>
+                            </button>
                         </div>
                         <button id="extract-now-btn" onclick="runScraper()" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl purple-gradient text-white text-xs font-bold shadow-lg shadow-purple-600/30 hover:opacity-95 transition flex items-center justify-center space-x-2 whitespace-nowrap">
                             <i data-lucide="zap" class="w-4 h-4 fill-white"></i>
@@ -1657,7 +1715,31 @@
                     </div>
 
                     <!-- Live Data Table -->
-                    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white">
+                    <!-- Results View Toggle (Cards Feed for Mobile vs Full Table for Desktop) -->
+                    <div class="flex items-center justify-between pb-1">
+                        <span class="text-xs font-bold text-slate-600">Extracted Results</span>
+                        <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+                            <button id="view-toggle-cards" onclick="toggleResultsView('cards')" class="px-3 py-1 rounded-lg bg-white text-purple-700 shadow-sm font-bold flex items-center space-x-1 transition">
+                                <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+                                <span>Cards View</span>
+                            </button>
+                            <button id="view-toggle-table" onclick="toggleResultsView('table')" class="px-3 py-1 rounded-lg text-slate-600 hover:text-purple-700 flex items-center space-x-1 transition">
+                                <i data-lucide="table" class="w-3.5 h-3.5"></i>
+                                <span>Table Grid</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mobile-First Touch Cards Feed -->
+                    <div id="mobile-cards-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                        <div class="mobile-item-card text-center p-6 text-slate-400 text-xs">
+                            <i data-lucide="sparkles" class="w-6 h-6 text-purple-400 mx-auto mb-2 animate-bounce"></i>
+                            <div>Enter any URL or tap a flagship preset above to extract items into touch cards!</div>
+                        </div>
+                    </div>
+
+                    <!-- Full Table View (Desktop & Grid) -->
+                    <div id="desktop-table-container" class="hidden border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white">
                         <div class="overflow-x-auto max-h-[460px] custom-scrollbar">
                             <table class="w-full text-left text-xs border-collapse">
                                 <thead id="table-head" class="sticky top-0 bg-slate-100/95 backdrop-blur border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[11px] z-10">
@@ -1732,6 +1814,34 @@ My pipeline captures invoice metadata, line items, unit prices, tax calculations
                         </div>
                     </div>
                 </div>
+
+            <!-- ================= RECENT ACTIVITY & DOWNLOADED FILES HISTORY ================= -->
+            <div id="extraction-history-section" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-7 space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+                            <i data-lucide="history" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900">Recent Activity & Downloaded Files</h3>
+                            <p class="text-[11px] text-slate-500">Track and re-download your previous extractions anytime.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span id="history-count-badge" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">0 runs</span>
+                        <button onclick="clearExtractionHistory()" class="text-[11px] font-semibold text-slate-400 hover:text-rose-600 transition">Clear History</button>
+                    </div>
+                </div>
+
+                <!-- History Items List Container -->
+                <div id="history-items-container" class="space-y-3">
+                    <div class="p-6 text-center text-slate-400 text-xs">
+                        <i data-lucide="inbox" class="w-6 h-6 text-slate-300 mx-auto mb-2"></i>
+                        <span>No extraction activity yet. Run your first extraction above to record history!</span>
+                    </div>
+                </div>
+            </div>
+
             </div>
         </div>
 
@@ -2259,6 +2369,239 @@ dataset.to_excel(<span class="text-amber-300">"output_styled.xlsx"</span>)
                     .then((reg) => console.log('[Extract PWA] Service Worker registered with scope:', reg.scope))
                     .catch((err) => console.log('[Extract PWA] Service Worker registration failed:', err));
             });
+        }
+
+        
+        // ================= MOBILE APP TAB SWITCHER =================
+        function mobileSwitchTab(tab) {
+            // Update active bottom bar tab styles
+            ['home', 'hub', 'robots', 'files'].forEach(t => {
+                const btn = document.getElementById(`mobile-tab-${t}`);
+                if (btn) {
+                    btn.className = "flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-slate-500 hover:text-purple-700 transition";
+                }
+            });
+
+            const activeBtn = document.getElementById(`mobile-tab-${tab}`);
+            if (activeBtn) {
+                activeBtn.className = "flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition bottom-tab-active";
+            }
+
+            if (tab === 'home') {
+                showPage('home-page');
+            } else if (tab === 'hub') {
+                showPage('hub-page');
+            } else if (tab === 'robots') {
+                showPage('robots-catalog-page');
+            } else if (tab === 'files') {
+                showPage('hub-page');
+                const badge = document.getElementById('record-count-badge');
+                if (badge) badge.scrollIntoView({ behavior: 'smooth' });
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // 1-Tap Paste from Mobile/Desktop Clipboard
+        async function pasteClipboardToUrl() {
+            const input = document.getElementById('target-url');
+            if (!input) return;
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text && (text.startsWith('http://') || text.startsWith('https://'))) {
+                    input.value = text.trim();
+                    input.classList.add('ring-2', 'ring-emerald-500');
+                    setTimeout(() => input.classList.remove('ring-2', 'ring-emerald-500'), 1200);
+                } else if (text) {
+                    input.value = text.trim();
+                } else {
+                    input.focus();
+                }
+            } catch(e) {
+                input.focus();
+            }
+        }
+
+        // Toggle between Cards View & Table View
+        function toggleResultsView(view) {
+            const cards = document.getElementById('mobile-cards-feed');
+            const table = document.getElementById('desktop-table-container');
+            const btnCards = document.getElementById('view-toggle-cards');
+            const btnTable = document.getElementById('view-toggle-table');
+
+            if (view === 'cards') {
+                if (cards) cards.classList.remove('hidden');
+                if (table) table.classList.add('hidden');
+                if (btnCards) btnCards.className = "px-3 py-1 rounded-lg bg-white text-purple-700 shadow-sm font-bold flex items-center space-x-1 transition";
+                if (btnTable) btnTable.className = "px-3 py-1 rounded-lg text-slate-600 hover:text-purple-700 flex items-center space-x-1 transition";
+            } else {
+                if (cards) cards.classList.add('hidden');
+                if (table) table.classList.remove('hidden');
+                if (btnTable) btnTable.className = "px-3 py-1 rounded-lg bg-white text-purple-700 shadow-sm font-bold flex items-center space-x-1 transition";
+                if (btnCards) btnCards.className = "px-3 py-1 rounded-lg text-slate-600 hover:text-purple-700 flex items-center space-x-1 transition";
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        
+        // ================= RECENT ACTIVITY & DOWNLOADS HISTORY =================
+        const HISTORY_STORAGE_KEY = "extract_activity_history_v2";
+
+        
+        // Seed default sample history entries if none exist yet
+        function seedInitialHistoryIfEmpty() {
+            try {
+                const existing = localStorage.getItem(HISTORY_STORAGE_KEY);
+                if (!existing || JSON.parse(existing).length === 0) {
+                    const sampleHistory = [
+                        {
+                            id: "hist_sample_1",
+                            timestamp: "10:45 AM",
+                            date: "Today",
+                            url: "https://scrapeme.live/shop/ (E-Commerce Catalog)",
+                            mode: "ecommerce",
+                            count: 48,
+                            excelUrl: "/api/download/extracted_data.xlsx",
+                            csvUrl: "/api/download/extracted_data.csv"
+                        },
+                        {
+                            id: "hist_sample_2",
+                            timestamp: "09:30 AM",
+                            date: "Today",
+                            url: "invoice_audit_sample.pdf (Vendor #INV-88219)",
+                            mode: "pdf",
+                            count: 6,
+                            excelUrl: "/api/download/extracted_data.xlsx",
+                            csvUrl: "/api/download/extracted_data.csv"
+                        },
+                        {
+                            id: "hist_sample_3",
+                            timestamp: "Yesterday",
+                            date: "Nov 8",
+                            url: "business-directory.com/verified-leads",
+                            mode: "leads",
+                            count: 32,
+                            excelUrl: "/api/download/extracted_data.xlsx",
+                            csvUrl: "/api/download/extracted_data.csv"
+                        }
+                    ];
+                    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(sampleHistory));
+                }
+            } catch(e) {}
+        }
+
+        function saveExtractionToHistory(url, mode, count, downloads) {
+            try {
+                let history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || "[]");
+                const newEntry = {
+                    id: "hist_" + Date.now(),
+                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    date: new Date().toLocaleDateString([], { month: 'short', day: 'numeric' }),
+                    url: url,
+                    mode: mode || "smart",
+                    count: count || 0,
+                    excelUrl: downloads?.excel || latestExcelUrl,
+                    csvUrl: downloads?.csv || latestCsvUrl
+                };
+                // Keep latest 15 runs
+                history.unshift(newEntry);
+                if (history.length > 15) history = history.slice(0, 15);
+                localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+                renderHistoryUI();
+            } catch(e) {
+                console.warn("Failed to save history to localStorage", e);
+            }
+        }
+
+        function renderHistoryUI() {
+            const container = document.getElementById('history-items-container');
+            const countBadge = document.getElementById('history-count-badge');
+            if (!container) return;
+
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY) || "[]");
+            } catch(e) {}
+
+            if (countBadge) countBadge.textContent = `${history.length} run${history.length === 1 ? '' : 's'}`;
+
+            if (history.length === 0) {
+                container.innerHTML = `
+                <div class="p-6 text-center text-slate-400 text-xs">
+                    <i data-lucide="inbox" class="w-6 h-6 text-slate-300 mx-auto mb-2"></i>
+                    <span>No extraction activity yet. Run your first extraction above to record history!</span>
+                </div>`;
+                if (window.lucide) lucide.createIcons();
+                return;
+            }
+
+            let html = "";
+            history.forEach(item => {
+                const cleanDomain = item.url.replace(/^https?:\/\//, '').split('/')[0];
+                html += `
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-purple-200 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-start space-x-3 min-w-0">
+                        <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 font-bold flex items-center justify-center shrink-0 text-xs">
+                            <i data-lucide="file-check" class="w-4 h-4"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs font-bold text-slate-900 truncate">${cleanDomain || item.url}</span>
+                                <span class="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-[10px] font-bold">${item.mode.toUpperCase()}</span>
+                                <span class="text-[10px] text-slate-400 font-mono">${item.date} ${item.timestamp}</span>
+                            </div>
+                            <div class="text-[11px] text-slate-500 truncate mt-0.5">${item.url} &bull; <strong class="text-emerald-600">${item.count} items</strong></div>
+                        </div>
+                    </div>
+                    <!-- Download actions for this historical run -->
+                    <div class="flex items-center space-x-1.5 shrink-0 pt-1 sm:pt-0">
+                        <a href="${item.excelUrl}" download class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold border border-emerald-200 flex items-center space-x-1 transition">
+                            <i data-lucide="file-spreadsheet" class="w-3 h-3"></i>
+                            <span>Excel</span>
+                        </a>
+                        <a href="${item.csvUrl}" download class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-[11px] font-bold border border-slate-200 flex items-center space-x-1 transition">
+                            <i data-lucide="file-text" class="w-3 h-3"></i>
+                            <span>CSV</span>
+                        </a>
+                        <button onclick="reRunUrl('${item.url}', '${item.mode}')" class="p-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-[11px] transition" title="Re-run extraction">
+                            <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function clearExtractionHistory() {
+            if (confirm("Clear all recent extraction history and saved file links?")) {
+                localStorage.removeItem(HISTORY_STORAGE_KEY);
+                renderHistoryUI();
+            }
+        }
+
+        function reRunUrl(url, mode) {
+            const input = document.getElementById('target-url');
+            if (input) input.value = url;
+            const modeSelect = document.getElementById('scrape-mode');
+            if (modeSelect && mode) modeSelect.value = mode;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            runScraper();
+        }
+
+        // Mobile Safe Download Helper
+        function triggerMobileDownload(type) {
+            const url = (type === 'excel') ? latestExcelUrl : latestCsvUrl;
+            if (!url) {
+                alert("Please extract data first to download!");
+                return;
+            }
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (type === 'excel') ? 'extracted_data.xlsx' : 'extracted_data.csv';
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         function showPage(pageId) {
@@ -3337,6 +3680,23 @@ Notifications will be sent to ${currentUserEmail}`);
             updateFloatingToolbar(rows.length, excelUrl, csvUrl);
             latestCsvUrl = csvUrl;
 
+            // Automatically record in Recent Activity & Download History
+            try {
+                const currentUrl = document.getElementById('target-url')?.value || (payload.mode === 'pdf' ? 'Invoice Audit PDF' : 'Sample Extraction');
+                const currentMode = document.getElementById('scrape-mode')?.value || payload.mode || 'smart';
+                saveExtractionToHistory(currentUrl, currentMode, rows.length, { excel: excelUrl, csv: csvUrl });
+            } catch(e) { console.warn('History save warning:', e); }
+
+            // Show mobile sticky download bar on mobile screens
+            try {
+                const stickyBar = document.getElementById('mobile-sticky-download-bar');
+                const stickyBadge = document.getElementById('mobile-sticky-badge');
+                if (stickyBar && rows.length > 0) {
+                    stickyBar.classList.remove('hidden');
+                    if (stickyBadge) stickyBadge.textContent = `${rows.length} Items Ready`;
+                }
+            } catch(e) {}
+
             const excelBtns = document.querySelectorAll("#download-excel-btn");
             excelBtns.forEach(btn => {
                 btn.href = excelUrl;
@@ -3384,7 +3744,48 @@ Notifications will be sent to ${currentUserEmail}`);
                 tbodyHTML += `</tr>`;
             });
             tbody.innerHTML = tbodyHTML;
-            lucide.createIcons();
+
+            // Populate Mobile Cards Feed
+            const cardsFeed = document.getElementById('mobile-cards-feed');
+            if (cardsFeed && rows.length > 0) {
+                let cardsHTML = "";
+                rows.forEach((row, idx) => {
+                    const title = row['Title'] || row['Business Name'] || row['Item Description'] || row['Item Name'] || row['Headline / Title'] || `Record #${idx + 1}`;
+                    const price = row['Price'] || row['Total'] || row['Total Amount'] || '';
+                    const rating = row['Rating_Or_Tag'] || row['Rating'] || '';
+                    const availability = row['Availability'] || row['CRM Status'] || row['Status'] || 'Verified';
+                    const link = row['Product_URL'] || row['Website'] || row['Target URL'] || row['Target Link'] || '';
+                    const img = row['Image_URL'] || '';
+
+                    cardsHTML += `
+                    <div class="mobile-item-card space-y-3">
+                        <div class="flex items-start gap-3">
+                            ${img ? `<img src="${img}" class="w-14 h-14 object-cover rounded-xl border border-slate-200 shrink-0" onerror="this.style.display='none'"/>` : `<div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 font-bold flex items-center justify-center shrink-0 border border-purple-200 text-xs">#${idx+1}</div>`}
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-slate-900 leading-snug line-clamp-2">${title}</h4>
+                                <div class="flex flex-wrap items-center gap-1.5 pt-1.5">
+                                    ${price ? `<span class="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 font-extrabold text-[11px] border border-purple-200">${price}</span>` : ''}
+                                    ${availability ? `<span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold text-[10px] border border-emerald-200">${availability}</span>` : ''}
+                                    ${rating ? `<span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium text-[10px]">${rating}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        ${link ? `
+                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                            <a href="${link}" target="_blank" class="text-purple-600 font-semibold hover:underline truncate max-w-[200px] flex items-center space-x-1">
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                                <span>Visit Link</span>
+                            </a>
+                            <button onclick="navigator.clipboard.writeText('${link}'); alert('Link copied!');" class="text-slate-400 hover:text-slate-600 p-1">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>` : ''}
+                    </div>`;
+                });
+                cardsFeed.innerHTML = cardsHTML;
+            }
+
+            if (window.lucide) lucide.createIcons();
         }
 
         function showStatus(active, text = "") {
@@ -3489,6 +3890,53 @@ Notifications will be sent to ${currentUserEmail}`);
                     <span>Install on This Computer (Desktop App)</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+
+    <!-- ================= NATIVE MOBILE APP BOTTOM NAVIGATION BAR (FIXED) ================= -->
+    <nav id="mobile-app-bar" class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 z-50 px-3 py-2 shadow-2xl flex items-center justify-around">
+        <button onclick="mobileSwitchTab('home')" id="mobile-tab-home" class="flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition bottom-tab-active">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span class="text-[10px] font-bold mt-1">Home</span>
+        </button>
+        <button onclick="mobileSwitchTab('hub')" id="mobile-tab-hub" class="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-slate-500 hover:text-purple-700 transition">
+            <div class="relative">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+                <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </div>
+            <span class="text-[10px] font-semibold mt-1">Extract</span>
+        </button>
+        <button onclick="mobileSwitchTab('robots')" id="mobile-tab-robots" class="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-slate-500 hover:text-purple-700 transition">
+            <i data-lucide="bot" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold mt-1">Robots</span>
+        </button>
+        <button onclick="mobileSwitchTab('files')" id="mobile-tab-files" class="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-slate-500 hover:text-purple-700 transition">
+            <i data-lucide="folder-down" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold mt-1">Files</span>
+        </button>
+        <button onclick="openGetAppModal()" class="flex flex-col items-center justify-center py-1 px-3 rounded-2xl text-purple-700 hover:text-purple-900 transition font-bold">
+            <i data-lucide="smartphone" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-1">Get App</span>
+        </button>
+    </nav>
+
+
+    <!-- ================= STICKY MOBILE DOWNLOAD ACTION BAR ================= -->
+    <div id="mobile-sticky-download-bar" class="hidden md:hidden fixed bottom-16 inset-x-3 z-40 p-2.5 bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700 flex items-center justify-between text-white animate-in slide-in-from-bottom duration-300">
+        <div class="flex items-center space-x-2 pl-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="mobile-sticky-badge" class="text-xs font-bold text-white">Files Ready</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+            <button onclick="triggerMobileDownload('excel')" class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center space-x-1 shadow-md">
+                <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
+                <span>Excel (.xlsx)</span>
+            </button>
+            <button onclick="triggerMobileDownload('csv')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition flex items-center space-x-1">
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                <span>CSV</span>
+            </button>
         </div>
     </div>
 

@@ -1,5 +1,5 @@
 // Service Worker for Extract Autonomous Web & Document Intelligence PWA
-const CACHE_NAME = "extract-pwa-v2.6";
+const CACHE_NAME = "extract-pwa-v2.9";
 
 const ASSETS_TO_CACHE = [
   "/",
@@ -42,7 +42,7 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// 3. Fetch Event: Network-first for /api, Cache-first / Stale-while-revalidate for UI
+// 3. Fetch Event: Network-First for Navigation & APIs; Stale-While-Revalidate for static assets
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
@@ -62,6 +62,22 @@ self.addEventListener("fetch", (event) => {
           }
         );
       })
+    );
+    return;
+  }
+
+  // Navigation requests (HTML loading) -> Network First with offline fallback
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request) || caches.match("/"))
     );
     return;
   }

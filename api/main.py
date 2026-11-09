@@ -66,7 +66,14 @@ class ScrapeRequest(BaseModel):
 async def root():
     index_file = os.path.join(UI_DIR, "index.html")
     if os.path.exists(index_file):
-        return FileResponse(index_file)
+        return FileResponse(
+            index_file,
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0"
+            }
+        )
     return {"message": "Extract AI Studio Engine Online. Place index.html in /ui directory."}
 
 @app.get("/api/network-info")
