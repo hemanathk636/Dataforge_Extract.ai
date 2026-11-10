@@ -41,7 +41,24 @@ A modern, production-grade automation suite designed to win freelance contracts 
    ```bash
    python run.py
    ```
-   The dashboard will automatically open in your default web browser at `http://127.0.0.1:8000`.
+   The dashboard will automatically open in your default web browser at `http://127.0.0.1:8080`.
+
+---
+
+## 🌐 Live Server & Mobile Access Links
+
+The backend server is active on `0.0.0.0:8080`:
+
+| Platform | URL |
+|---|---|
+| **Desktop / Laptop** | `http://127.0.0.1:8080` |
+| **Mobile Phone (Wi-Fi)** | `http://<your-lan-ip>:8080` (e.g., `http://10.228.155.159:8080`) |
+
+### 📱 To Install on Your Phone:
+1. Open `http://<your-lan-ip>:8080` on your mobile browser (or click **"Get App"** / scan the QR code).
+2. **Android (Chrome):** Tap the **⋮** 3 dots menu → tap **"Install App"** or **"Add to Home screen"**.
+3. **iPhone (Safari):** Tap the **Share** button → tap **"Add to Home Screen"**.
+4. **Native App via Expo:** Double-click [`start_mobile.bat`](start_mobile.bat) and scan the QR code using the **Expo Go** app.
 
 ---
 
