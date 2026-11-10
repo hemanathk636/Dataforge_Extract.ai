@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataForge AI — 3D Holographic System Workflow</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      user-select: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #030712;
+      color: #f9fafb;
+    }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* Cinematic HUD Overlay */
+    .hud-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 36px;
+      background: radial-gradient(circle at center, transparent 45%, rgba(3, 7, 18, 0.75) 100%);
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: auto;
+    }
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #00f0ff;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 4px 10px;
+      border-radius: 999px;
+      width: fit-content;
+      backdrop-filter: blur(8px);
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background: #00f0ff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #00f0ff;
+      animation: pulse 1.6s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .author-tag {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+    }
+    .author-tag strong {
+      color: #38bdf8;
+    }
+
+    /* Live Telemetry Card */
+    .telemetry-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 14px 20px;
+      backdrop-filter: blur(14px);
+      display: flex;
+      gap: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+    .telemetry-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .telemetry-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 1px;
+    }
+    .telemetry-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      font-feature-settings: "tnum";
+    }
+
+    /* Bottom Controller & Phase Detail */
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      pointer-events: auto;
+    }
+    .phase-card {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 18px 24px;
+      max-width: 460px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .phase-step {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+    .phase-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #ffffff;
+    }
+    .phase-desc {
+      font-size: 0.88rem;
+      color: #94a3b8;
+      line-height: 1.45;
+    }
+
+    /* Control Buttons */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      background: rgba(30, 41, 59, 0.85);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn:hover {
+      background: rgba(51, 65, 85, 0.95);
+      border-color: #38bdf8;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border: 1px solid #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(2, 132, 199, 0.45);
+    }
+    .btn.primary:hover {
+      box-shadow: 0 0 28px rgba(56, 189, 248, 0.65);
+    }
+    .hint-text {
+      font-size: 0.72rem;
+      color: #64748b;
+      letter-spacing: 0.5px;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div class="hud-layer">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="brand-title">
+        <div class="badge">
+          <div class="pulse-dot"></div>
+          DATAFORGE AI PIPELINE
+        </div>
+        <h1>Autonomous 3D Extraction Engine</h1>
+        <div class="author-tag">Engineered by <strong>Hemanath K</strong> | High-Performance Automation Suite</div>
+      </div>
+
+      <div class="telemetry-card">
+        <div class="telemetry-item">
+          <span class="telemetry-label">Throughput</span>
+          <span class="telemetry-value" id="val-throughput">1,420 rows/sec</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="telemetry-label">Latency</span>
+          <span class="telemetry-value">0.42 s</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="telemetry-label">Deliverable</span>
+          <span class="telemetry-value" style="color: #10b981;">.XLSX & .CSV</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <div class="phase-card" id="phase-card">
+        <div class="phase-step" id="phase-step">STAGE 01 // INGESTION</div>
+        <div class="phase-title" id="phase-title">Multi-Modal Target Ingestion</div>
+        <div class="phase-desc" id="phase-desc">
+          Accepts dynamic e-commerce URLs, lead directories, and multi-page PDF invoices with anti-bot header rotation.
+        </div>
+      </div>
+
+      <div class="controls-panel">
+        <div class="btn-group">
+          <button class="btn primary" id="btn-tour">
+            <span>▶ Play Cinematic Tour</span>
+          </button>
+          <button class="btn" id="btn-next">Next Phase →</button>
+          <button class="btn" id="btn-reset">Reset View</button>
+        </div>
+        <span class="hint-text">🖱️ Drag mouse to orbit • Scroll to zoom • Spacebar to pause</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Three.js 3D Setup ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x030712, 0.015);
+
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 18, 38);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2.05;
+    controls.minDistance = 10;
+    controls.maxDistance = 75;
+
+    // --- Lighting ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const dirLight1 = new THREE.DirectionalLight(0x38bdf8, 1.8);
+    dirLight1.position.set(20, 30, 20);
+    scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0xa855f7, 1.2);
+    dirLight2.position.set(-20, -10, -20);
+    scene.add(dirLight2);
+
+    // --- Cyber Floor Grid ---
+    const gridHelper = new THREE.GridHelper(90, 45, 0x0284c7, 0x1e293b);
+    gridHelper.position.y = -4;
+    scene.add(gridHelper);
+
+    // --- Starfield Particle Network ---
+    const particleCount = 750;
+    const particleGeo = new THREE.BufferGeometry();
+    const particlePos = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount * 3; i += 3) {
+      particlePos[i] = (Math.random() - 0.5) * 90;
+      particlePos[i + 1] = Math.random() * 35 - 4;
+      particlePos[i + 2] = (Math.random() - 0.5) * 90;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+    const particleMat = new THREE.PointsMaterial({
+      color: 0x38bdf8,
+      size: 0.18,
+      transparent: true,
+      opacity: 0.6
+    });
+    const particleSystem = new THREE.Points(particleGeo, particleMat);
+    scene.add(particleSystem);
+
+    // --- Stages & Hologram Nodes ---
+    const stages = [
+      {
+        id: 1,
+        step: "STAGE 01 // INGESTION",
+        title: "Multi-Modal Target Ingestion",
+        desc: "Ingests dynamic e-commerce URLs, directories, and multi-page PDF invoices with anti-bot header rotation.",
+        color: 0x00f0ff,
+        pos: new THREE.Vector3(-18, 0, 0),
+        camPos: new THREE.Vector3(-18, 6, 16),
+        lookAt: new THREE.Vector3(-18, 1, 0)
+      },
+      {
+        id: 2,
+        step: "STAGE 02 // PARSING CORE",
+        title: "Heuristic DOM & Entity Extraction",
+        desc: "Autonomous DOM traversal extracts prices, ratings, and stock. pdfplumber isolates invoice totals & dates.",
+        color: 0xf59e0b,
+        pos: new THREE.Vector3(-6, 0, -4),
+        camPos: new THREE.Vector3(-6, 7, 12),
+        lookAt: new THREE.Vector3(-6, 1, -4)
+      },
+      {
+        id: 3,
+        step: "STAGE 03 // STYLING MATRIX",
+        title: "Executive openpyxl Styler",
+        desc: "Generates corporate-grade Excel workbooks with frozen headers, auto-fitted columns, and dark slate zebra rows.",
+        color: 0x10b981,
+        pos: new THREE.Vector3(6, 0, 4),
+        camPos: new THREE.Vector3(6, 6, 18),
+        lookAt: new THREE.Vector3(6, 1, 4)
+      },
+      {
+        id: 4,
+        step: "STAGE 04 // DISTRIBUTION",
+        title: "Cross-Device API & Mobile PWA",
+        desc: "Instant download to Desktop + live Wi-Fi streaming to iPhone & Android mobile devices on port 8080.",
+        color: 0xa855f7,
+        pos: new THREE.Vector3(18, 0, 0),
+        camPos: new THREE.Vector3(18, 6, 16),
+        lookAt: new THREE.Vector3(18, 1, 0)
+      }
+    ];
+
+    const nodes = [];
+    const rotatingMeshes = [];
+
+    stages.forEach((stage, idx) => {
+      const group = new THREE.Group();
+      group.position.copy(stage.pos);
+
+      // Core Hologram Geometry
+      let coreGeo;
+      if (idx === 0) coreGeo = new THREE.CylinderGeometry(2, 2.4, 1.2, 6);
+      else if (idx === 1) coreGeo = new THREE.OctahedronGeometry(2, 0);
+      else if (idx === 2) coreGeo = new THREE.BoxGeometry(2.4, 2.4, 2.4);
+      else coreGeo = new THREE.DodecahedronGeometry(2);
+
+      const coreMat = new THREE.MeshStandardMaterial({
+        color: stage.color,
+        emissive: stage.color,
+        emissiveIntensity: 0.45,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.85
+      });
+      const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+      group.add(coreMesh);
+      rotatingMeshes.push({ mesh: coreMesh, speedX: 0.01, speedY: 0.015 });
+
+      // Solid inner core
+      const innerGeo = new THREE.SphereGeometry(0.8, 16, 16);
+      const innerMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: stage.color,
+        emissiveIntensity: 0.8,
+        roughness: 0.1
+      });
+      const innerMesh = new THREE.Mesh(innerGeo, innerMat);
+      group.add(innerMesh);
+
+      // Holographic Ring
+      const ringGeo = new THREE.RingGeometry(3.2, 3.4, 32);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: stage.color,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.5
+      });
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.rotation.x = Math.PI / 2;
+      group.add(ringMesh);
+      rotatingMeshes.push({ mesh: ringMesh, speedX: 0, speedY: 0, speedZ: 0.008 });
+
+      // Ground pedestal pillar
+      const pedestalGeo = new THREE.CylinderGeometry(1.6, 2.2, 3.8, 16);
+      const pedestalMat = new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        roughness: 0.8,
+        metalness: 0.2
+      });
+      const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat);
+      pedestal.position.y = -2;
+      group.add(pedestal);
+
+      scene.add(group);
+      nodes.push(group);
+    });
+
+    // --- Laser Data Beams Connecting Nodes ---
+    for (let i = 0; i < stages.length - 1; i++) {
+      const start = stages[i].pos;
+      const end = stages[i + 1].pos;
+      const distance = start.distanceTo(end);
+
+      const beamGeo = new THREE.CylinderGeometry(0.06, 0.06, distance, 8);
+      const beamMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.75
+      });
+      const beam = new THREE.Mesh(beamGeo, beamMat);
+
+      const midPoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+      beam.position.copy(midPoint);
+      beam.position.y += 0.2;
+
+      beam.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3().subVectors(end, start).normalize());
+      scene.add(beam);
+    }
+
+    // --- Interactive Stage Switcher & Camera Animation ---
+    let currentStageIndex = 0;
+    let isTouring = false;
+    let tourTimer = null;
+    let targetCameraPos = camera.position.clone();
+    let targetControlsTarget = controls.target.clone();
+
+    function setStage(index, smooth = true) {
+      currentStageIndex = index % stages.length;
+      const stage = stages[currentStageIndex];
+
+      // Update HUD
+      const phaseCard = document.getElementById('phase-card');
+      phaseCard.style.opacity = '0';
+      phaseCard.style.transform = 'translateY(10px)';
+
+      setTimeout(() => {
+        document.getElementById('phase-step').textContent = stage.step;
+        document.getElementById('phase-step').style.color = '#' + stage.color.toString(16).padStart(6, '0');
+        document.getElementById('phase-title').textContent = stage.title;
+        document.getElementById('phase-desc').textContent = stage.desc;
+        phaseCard.style.opacity = '1';
+        phaseCard.style.transform = 'translateY(0)';
+      }, 200);
+
+      targetCameraPos.copy(stage.camPos);
+      targetControlsTarget.copy(stage.lookAt);
+    }
+
+    document.getElementById('btn-next').addEventListener('click', () => {
+      stopTour();
+      setStage(currentStageIndex + 1);
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      stopTour();
+      targetCameraPos.set(0, 18, 38);
+      targetControlsTarget.set(0, 0, 0);
+      document.getElementById('phase-step').textContent = "OVERVIEW // TOPOLOGY";
+      document.getElementById('phase-step').style.color = "#00f0ff";
+      document.getElementById('phase-title').textContent = "Full Pipeline Architecture";
+      document.getElementById('phase-desc').textContent = "Four coordinated subsystems delivering end-to-end web & document automation in under 0.5s.";
+    });
+
+    const btnTour = document.getElementById('btn-tour');
+    function startTour() {
+      isTouring = true;
+      btnTour.classList.add('primary');
+      btnTour.innerHTML = '<span>⏸ Pause Tour</span>';
+      setStage(0);
+
+      tourTimer = setInterval(() => {
+        setStage(currentStageIndex + 1);
+      }, 5500);
+    }
+
+    function stopTour() {
+      isTouring = false;
+      clearInterval(tourTimer);
+      btnTour.innerHTML = '<span>▶ Play Cinematic Tour</span>';
+    }
+
+    btnTour.addEventListener('click', () => {
+      if (isTouring) stopTour();
+      else startTour();
+    });
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        if (isTouring) stopTour();
+        else startTour();
+      } else if (e.code === 'ArrowRight') {
+        stopTour();
+        setStage(currentStageIndex + 1);
+      }
+    });
+
+    // --- Dynamic Telemetry Fluctuation ---
+    setInterval(() => {
+      const randRows = 1350 + Math.floor(Math.random() * 180);
+      document.getElementById('val-throughput').textContent = `${randRows.toLocaleString()} rows/sec`;
+    }, 1200);
+
+    // --- Render Loop ---
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      const time = clock.getElapsedTime();
+
+      // Rotate nodes & rings
+      rotatingMeshes.forEach(item => {
+        if (item.speedX) item.mesh.rotation.x += item.speedX;
+        if (item.speedY) item.mesh.rotation.y += item.speedY;
+        if (item.speedZ) item.mesh.rotation.z += item.speedZ;
+      });
+
+      // Float nodes up and down slightly
+      nodes.forEach((node, i) => {
+        node.position.y = Math.sin(time * 1.5 + i) * 0.25;
+      });
+
+      // Smooth camera interpolation
+      camera.position.lerp(targetCameraPos, 0.04);
+      controls.target.lerp(targetControlsTarget, 0.04);
+      controls.update();
+
+      // Slowly rotate particle field
+      particleSystem.rotation.y = time * 0.02;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Window resize handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
